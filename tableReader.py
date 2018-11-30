@@ -9,7 +9,7 @@ class tableInspector():
         @brief Считывание и систиматизация данных из таблиц MS Excel
     """
 
-    other_description = {}
+    other_description = list()
 
     def __init__(self, patch_to_file, number_sheet=0):
         self.read_sheet(patch_to_file, number_sheet=0)
@@ -25,30 +25,32 @@ class tableInspector():
         row_count = sheet.max_row
         for row in sheet.rows:
             turple = [row[1].value, row[4].value]
-            other_description = str(turple[0]).rsplit(', ', 4)
-            for i in range(len(other_description)):
-                other_description[i] = other_description[i].capitalize()
-            print(other_description)
-        return other_description
+            if turple[0] is not None and str(turple[0]) != 'Товар':
+                self.other_description.append(str(turple[0]).rsplit(', ', 4))
+        for i in range(len(self.other_description)):
+            print(self.other_description.__getitem__(i))
+        return self.other_description
 
     def name_book(self, row=0):
-        return self.other_description[row]
+        return self.other_description.__getitem__(row).__getitem__(0)
 
     def autor_book(self, row=0):
-        return self.other_description[row]
+        return self.other_description.__getitem__(row).__getitem__(1)
 
     def description_book(self, row=0):
-        return self.other_description[row]
+        return self.other_description.__getitem__(row).__getitem__(2)
 
     def publisher_book(self, row=0):
-        return self.other_description[row]
+        return self.other_description.__getitem__(row).__getitem__(3)
 
     def release_date_book(self, row=0):
-        return self.other_description[row]
-
-    def release_date_book(self, row=0):
-        return self.other_description[row]
+        return self.other_description.__getitem__(row).__getitem__(4)
 
 
 if __name__ == '__main__':
     table_Inspector = tableInspector(patch_to_file="prices_s2.xlsx")
+    """print(table_Inspector.name_book(0)+
+    table_Inspector.autor_book(0)+
+    table_Inspector.description_book(0)+
+    table_Inspector.publisher_book(0)+
+    table_Inspector.release_date_book(0))"""
