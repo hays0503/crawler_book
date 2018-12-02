@@ -34,23 +34,33 @@ class tableInspector():
     def name_book(self, row=0):
         return self.other_description.__getitem__(row).__getitem__(0)
 
+    def publisher_book(self, row=0):
+        return self.other_description.__getitem__(row).__getitem__(1)
+
+    def release_date_book(self, row=0):
+        return self.other_description.__getitem__(row).__getitem__(2)
+
+    def book_binding_type(self, row=0):
+        return self.other_description.__getitem__(row).__getitem__(3)
+
+    def number_of_pages_book(self, row=0):
+        return self.other_description.__getitem__(row).__getitem__(4)
+
     def autor_book(self, row=0):
         return self.other_description.__getitem__(row).__getitem__(1)
 
     def description_book(self, row=0):
         return self.other_description.__getitem__(row).__getitem__(2)
 
-    def publisher_book(self, row=0):
-        return self.other_description.__getitem__(row).__getitem__(3)
 
-    def release_date_book(self, row=0):
-        return self.other_description.__getitem__(row).__getitem__(4)
+
 
 
 if __name__ == '__main__':
     table_Inspector = tableInspector(patch_to_file="prices_s2.xlsx")
-    """print(table_Inspector.name_book(0)+
-    table_Inspector.autor_book(0)+
-    table_Inspector.description_book(0)+
-    table_Inspector.publisher_book(0)+
-    table_Inspector.release_date_book(0))"""
+    print(
+    table_Inspector.name_book(0)+':1\n'+
+    table_Inspector.autor_book(0)+':2\n'+
+    table_Inspector.description_book(0)+':3\n'+
+    table_Inspector.publisher_book(0)+':4\n'+
+    table_Inspector.release_date_book(0)+':5\n')

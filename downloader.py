@@ -20,7 +20,6 @@ class infoByPost():
         @param [in] str url
         @return str
         """
-
         soup = BeautifulSoup(''.join(data), 'html.parser')
         last_links = soup.find_all(string=re.compile("\d\d\d-\d\d\d-\d\d-\d\d\d\d-\d"))
         print(last_links)
@@ -36,6 +35,29 @@ class infoByPost():
         last_links = soup.find_all('span', itemprop="description")
         print(last_links[0].text)
 
+    def autor(self, data):
+        """!
+        @brief Parser author(s) of the book
+        @brief Парсер автора(ов) книги
+        @param [in] str url
+        @return str
+        """
+        soup = BeautifulSoup(''.join(data), 'html.parser')
+        last_links = soup.find('div', {"class": "p-10 author-block"})
+
+        soup = BeautifulSoup(str(last_links), 'html.parser')
+        last_links = soup.find_all('b', itemprop="name")
+        list_autor = []
+        for name_autor in last_links:
+            list_autor.append(name_autor.text)
+        for name_autor in list_autor:
+            print(name_autor)
+
+
+
+
+
+
 
     def info(self, url):
         """!
@@ -48,8 +70,9 @@ class infoByPost():
         data = rc.text
         self.isbn(data)
         self.description(data)
+        self.autor(data)
 
 
 if __name__ == '__main__':
     info = infoByPost()
-    info.info("https://www.flip.kz/catalog?prod=1237852")
+    info.info("https://www.flip.kz/catalog?prod=776517")
