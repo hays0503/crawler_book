@@ -4,15 +4,15 @@ import openpyxl
 @package tableReader
 """
 
-class tableInspector():
+
+class TableInspector:
     """
         @brief Считывание и систиматизация данных из таблиц MS Excel
     """
-
     other_description = list()
 
     def __init__(self, patch_to_file, number_sheet=0):
-        self.read_sheet(patch_to_file, number_sheet=0)
+        self.read_sheet(patch_to_file, number_sheet)
 
     def read_sheet(self, patch_to_file, number_sheet=0):
         """
@@ -53,14 +53,11 @@ class tableInspector():
         return self.other_description.__getitem__(row).__getitem__(2)
 
 
-
-
-
 if __name__ == '__main__':
-    table_Inspector = tableInspector(patch_to_file="prices_s2.xlsx")
+    table_Inspector = TableInspector(patch_to_file="prices_s2.xlsx")
     print(
-    table_Inspector.name_book(0)+':1\n'+
-    table_Inspector.autor_book(0)+':2\n'+
-    table_Inspector.description_book(0)+':3\n'+
-    table_Inspector.publisher_book(0)+':4\n'+
-    table_Inspector.release_date_book(0)+':5\n')
+        table_Inspector.name_book(0) + ':1\n' +
+        table_Inspector.autor_book(0) + ':2\n' +
+        table_Inspector.description_book(0) + ':3\n' +
+        table_Inspector.publisher_book(0) + ':4\n' +
+        table_Inspector.release_date_book(0) + ':5\n')
