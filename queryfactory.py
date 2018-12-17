@@ -110,38 +110,47 @@ class QueryFactory (object):
 
     @staticmethod
     def add_row_in_table_genre(author_name):
-        if type (author_name) is not list:
-            query = "INSERT INTO `librarydb`.`genre`(`genre_record`) VALUES ('%s');" % author_name
+        if type(author_name) is not list:
+            query = "INSERT INTO `librarydb`.`author`(`genre_record`) VALUES ('%s');" % author_name
+        else:
+            query = "INSERT INTO `librarydb`.`author`(`genre_record`) VALUES"
+            query += " ('" + "'),('".join(author_name) + "');"
+        return query
+
+    @staticmethod
+    def add_row_in_table_genre(genre_name):
+        if type(genre_name) is not list:
+            query = "INSERT INTO `librarydb`.`genre`(`genre_record`) VALUES ('%s');" % genre_name
         else:
             query = "INSERT INTO `librarydb`.`genre`(`genre_record`) VALUES"
-            query += " ('" + "'),('".join (author) + "');"
+            query += " ('" + "'),('".join (genre_name) + "');"
         return query
 
     @staticmethod
-    def add_row_in_table_bbk(author_name):
-        if type (author_name) is not list:
-            query = "INSERT INTO `librarydb`.`bbk`(`bbk_record`) VALUES ('%s');" % author_name
+    def add_row_in_table_bbk(bbk_index):
+        if type(bbk_index) is not list:
+            query = "INSERT INTO `librarydb`.`bbk`(`bbk_record`) VALUES ('%s');" % bbk_index
         else:
             query = "INSERT INTO `librarydb`.`bbk`(`bbk_record`) VALUES"
-            query += " ('" + "'),('".join (author) + "');"
+            query += " ('" + "'),('".join(bbk_index) + "');"
         return query
 
     @staticmethod
-    def add_row_in_table_udc(author_name):
-        if type (author_name) is not list:
-            query = "INSERT INTO `librarydb`.`udc`(`udc_record`) VALUES ('%s');" % author_name
+    def add_row_in_table_udc(udc_index):
+        if type(udc_index) is not list:
+            query = "INSERT INTO `librarydb`.`udc`(`udc_record`) VALUES ('%s');" % udc_index
         else:
             query = "INSERT INTO `librarydb`.`udc`(`udc_record`) VALUES"
-            query += " ('" + "'),('".join (author) + "');"
+            query += " ('" + "'),('".join(udc_index) + "');"
         return query
 
     @staticmethod
-    def add_row_in_table_description(author_name):
-        if type (author_name) is not list:
-            query = "INSERT INTO `librarydb`.`description`(`description_record`) VALUES ('%s');" % author_name
+    def add_row_in_table_description(description):
+        if type (description) is not list:
+            query = "INSERT INTO `librarydb`.`description`(`description_record`) VALUES ('%s');" % description
         else:
             query = "INSERT INTO `librarydb`.`description`(`description_record`) VALUES"
-            query += " ('" + "'),('".join (author) + "');"
+            query += " ('" + "'),('".join(description) + "');"
         return query
 
     @staticmethod
