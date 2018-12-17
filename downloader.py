@@ -53,6 +53,25 @@ class InfoByPost:
         for name_autor in list_autor:
             print(name_autor)
 
+    def __genre(self, data):
+        """!
+        @brief Parser author(s) of the book
+        @brief Парсер автора(ов) книги
+        @param [in] str url
+        @return str
+        """
+        soup = BeautifulSoup(''.join(data), 'html.parser')
+        last_links = soup.find('div', {"class": "krohi"})
+
+        soup = BeautifulSoup(str(last_links), 'html.parser')
+        last_links = soup.find_all('span', {"property": "name"})
+        list_autor = []
+        for name_autor in last_links:
+            list_autor.append(name_autor.text)
+        print('\n')
+        for name_autor in list_autor:
+            print(name_autor)
+
     def info(self, url):
         """!
         @brief Compiling all information about the post
@@ -65,8 +84,9 @@ class InfoByPost:
         self.__isbn(data)
         self.__description(data)
         self.__autor(data)
+        self.__genre(data)
 
 
 if __name__ == '__main__':
     info = InfoByPost()
-    info.info("https://www.flip.kz/catalog?prod=776517")
+    info.info("https://www.flip.kz/catalog?prod=1272815")
