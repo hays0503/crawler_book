@@ -11,33 +11,32 @@ class QueryFactory (object):
 
     @staticmethod
     def show_all():
-        return """
-        SELECT 
-            `librarydb`.`books`.id_books,
-            `librarydb`.`books`.name_book,
-            GROUP_CONCAT(DISTINCT `librarydb`.`book_binding_type`.binding_type),
-            `librarydb`.`books`.index_udc,
-            `librarydb`.`books`.index_bbk,
-            `librarydb`.`books`.isbn,
-            GROUP_CONCAT(DISTINCT `librarydb`.`author`.author_record),
-            GROUP_CONCAT(DISTINCT `librarydb`.`genre`.genre_record),
-            GROUP_CONCAT(DISTINCT `librarydb`.`description`.description_record)
-        FROM
-            `librarydb`.`books`
-                JOIN
-            `librarydb`.`author_join_table` ON `librarydb`.`author_join_table`.id_books = `librarydb`.`books`.id_books
-                JOIN
-            `librarydb`.`author` ON `librarydb`.`author`.id_author = `librarydb`.`author_join_table`.id_author
-                JOIN
-            `librarydb`.`genre_join_table` ON `librarydb`.`genre_join_table`.id_books = `librarydb`.`books`.id_books
-                JOIN
-            `librarydb`.`genre` ON `librarydb`.`genre`.id_genre = `librarydb`.`genre_join_table`.id_genre
-                JOIN
-            `librarydb`.`description` ON `librarydb`.`description`.id_description = `librarydb`.`books`.id_books
-                JOIN
-            `librarydb`.`book_binding_type` ON `librarydb`.`book_binding_type`.id_book_binding_type = `librarydb`.`books`.index_book_binding_type
-        GROUP BY `librarydb`.`books`.id_books;
+        query = """SELECT `librarydb`.`books`.id_books,
+                         `librarydb`.`books`.name_book,
+                          GROUP_CONCAT(DISTINCT `librarydb`.`book_binding_type`.binding_type),
+                         `librarydb`.`books`.index_udc,
+                         `librarydb`.`books`.index_bbk,
+                         `librarydb`.`books`.isbn,
+                         GROUP_CONCAT(DISTINCT `librarydb`.`author`.author_record),
+                         GROUP_CONCAT(DISTINCT `librarydb`.`genre`.genre_record),
+                         GROUP_CONCAT(DISTINCT `librarydb`.`description`.description_record)
+                    FROM
+                        `librarydb`.`books`
+                            JOIN
+                        `librarydb`.`author_join_table` ON `librarydb`.`author_join_table`.id_books = `librarydb`.`books`.id_books
+                            JOIN
+                        `librarydb`.`author` ON `librarydb`.`author`.id_author = `librarydb`.`author_join_table`.id_author
+                            JOIN
+                        `librarydb`.`genre_join_table` ON `librarydb`.`genre_join_table`.id_books = `librarydb`.`books`.id_books
+                            JOIN
+                        `librarydb`.`genre` ON `librarydb`.`genre`.id_genre = `librarydb`.`genre_join_table`.id_genre
+                            JOIN
+                        `librarydb`.`description` ON `librarydb`.`description`.id_description = `librarydb`.`books`.id_books
+                            JOIN
+                        `librarydb`.`book_binding_type` ON `librarydb`.`book_binding_type`.id_book_binding_type = `librarydb`.`books`.index_book_binding_type
+                    GROUP BY `librarydb`.`books`.id_books;
         """
+        return query
 
     @staticmethod
     def search_by_id_book(id_book):
@@ -80,32 +79,55 @@ class QueryFactory (object):
     @staticmethod
     def delete_by_id_book(id_book):
         query = """
-        SET SQL_SAFE_UPDATES = 0;
-        
-        DELETE FROM `librarydb`.`author_join_table` 
-        WHERE
-            `librarydb`.`author_join_table`.id_books = '%i';
-        
-        DELETE FROM `librarydb`.`genre_join_table` 
-        WHERE
-            `librarydb`.`genre_join_table`.id_books = '%i';
-        
-        DELETE FROM `librarydb`.`bbk` 
-        WHERE
-            `librarydb`.`bbk`.id_bbk = '%i';
-        
-        DELETE FROM `librarydb`.`udc` 
-        WHERE
-            `librarydb`.`udc`.id_udc = '%i';
-        
-        DELETE FROM `librarydb`.`description` 
-        WHERE
-            `librarydb`.`description`.id_description = '%i';
-        
         DELETE FROM `librarydb`.`books` 
         WHERE
-            `librarydb`.`books`.id_books = '%i';
-        """ % (id_book, id_book, id_book, id_book, id_book, id_book)
+            `librarydb`.`books`.id_books = %i;
+        """ % id_book
+        return query
+
+    @staticmethod
+    def delete_by_id_author_join_table(id_book):
+        query = """
+        DELETE FROM `librarydb`.`author_join_table` 
+        WHERE
+            `librarydb`.`author_join_table`.id_books = %i;
+        """ % id_book
+        return query
+
+    @staticmethod
+    def delete_by_id_genre_join_table(id_book):
+        query = """
+        DELETE FROM `librarydb`.`genre_join_table` 
+        WHERE
+            `librarydb`.`genre_join_table`.id_books = %i;
+        """ % id_book
+        return query
+
+    @staticmethod
+    def delete_by_id_bbk(id_book):
+        query = """
+        DELETE FROM `librarydb`.`bbk` 
+        WHERE
+            `librarydb`.`bbk`.id_bbk = %i;
+        """ % id_book
+        return query
+
+    @staticmethod
+    def delete_by_id_udc(id_book):
+        query = """
+        DELETE FROM `librarydb`.`udc` 
+        WHERE
+            `librarydb`.`udc`.id_udc = %i;
+        """ % id_book
+        return query
+
+    @staticmethod
+    def delete_by_id_description(id_book):
+        query = """
+        DELETE FROM `librarydb`.`description` 
+        WHERE
+            `librarydb`.`description`.id_description = %i;
+        """ % id_book
         return query
 
     @staticmethod
@@ -158,15 +180,15 @@ class QueryFactory (object):
                                index_book_binding_type, release_date_book,
                                index_udc, index_bbk, index_description, isbn):
         if type (name_book) is not list:
-            query = "INSERT INTO `librarydb`.`description`" \
-                    "`(`name_book`,`number_of_pages_book`," \
+            query = "INSERT INTO `librarydb`.`books`" \
+                    "(`name_book`,`number_of_pages_book`," \
                     "`index_book_binding_type`,`release_date_book`," \
                     "`index_udc`,`index_bbk`,`index_description`,`isbn`)" \
                     " VALUES ('%s', %s, %s, %s, %s, %s, %s, '%s');" \
                     % (name_book, str (number_of_pages_book), str (index_book_binding_type),
                        str (release_date_book), str (index_udc), str (index_bbk), str (index_description), isbn)
         else:
-            query = "INSERT INTO `librarydb`.`description`" \
+            query = "INSERT INTO `librarydb`.`books`" \
                     "(`name_book`,`number_of_pages_book`," \
                     "`index_book_binding_type`,`release_date_book`," \
                     "`index_udc`,`index_bbk`,`index_description`,`isbn`)" \
@@ -235,4 +257,4 @@ if __name__ == '__main__':
     isbn = 'aaa'
     author = 'ddd'
     print(type(author) is list)
-    print(QueryFactory.add_row_in_genre_join_table([1, 2], [3, 4]))
+    print(QueryFactory.show_all())
