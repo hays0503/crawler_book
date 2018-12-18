@@ -23,17 +23,21 @@ class QueryFactory (object):
                     FROM
                         `librarydb`.`books`
                             JOIN
-                        `librarydb`.`author_join_table` ON `librarydb`.`author_join_table`.id_books = `librarydb`.`books`.id_books
+                        `librarydb`.`author_join_table` ON `librarydb`.`author_join_table`.id_books = 
+                        `librarydb`.`books`.id_books
                             JOIN
-                        `librarydb`.`author` ON `librarydb`.`author`.id_author = `librarydb`.`author_join_table`.id_author
+                        `librarydb`.`author` ON `librarydb`.`author`.id_author = 
+                        `librarydb`.`author_join_table`.id_author
                             JOIN
-                        `librarydb`.`genre_join_table` ON `librarydb`.`genre_join_table`.id_books = `librarydb`.`books`.id_books
+                        `librarydb`.`genre_join_table` ON `librarydb`.`genre_join_table`.id_books = 
+                        `librarydb`.`books`.id_books
                             JOIN
                         `librarydb`.`genre` ON `librarydb`.`genre`.id_genre = `librarydb`.`genre_join_table`.id_genre
                             JOIN
-                        `librarydb`.`description` ON `librarydb`.`description`.id_description = `librarydb`.`books`.id_books
+                        `librarydb`.`description` ON `librarydb`.`description`.id_books = `librarydb`.`books`.id_books
                             JOIN
-                        `librarydb`.`book_binding_type` ON `librarydb`.`book_binding_type`.id_book_binding_type = `librarydb`.`books`.index_book_binding_type
+                        `librarydb`.`book_binding_type` ON `librarydb`.`book_binding_type`.id_book_binding_type = 
+                        `librarydb`.`books`.index_book_binding_type
                     GROUP BY `librarydb`.`books`.id_books;
         """
         return query
@@ -62,9 +66,10 @@ class QueryFactory (object):
                 JOIN
             `librarydb`.`genre` ON `librarydb`.`genre`.id_genre = `librarydb`.`genre_join_table`.id_genre
                 JOIN
-            `librarydb`.`description` ON `librarydb`.`description`.id_description = `librarydb`.`books`.id_books
+            `librarydb`.`description` ON `librarydb`.`description`.id_books = `librarydb`.`books`.id_books
                 JOIN
-            `librarydb`.`book_binding_type` ON `librarydb`.`book_binding_type`.id_book_binding_type = `librarydb`.`books`.index_book_binding_type
+            `librarydb`.`book_binding_type` ON `librarydb`.`book_binding_type`.id_book_binding_type = 
+            `librarydb`.`books`.index_book_binding_type
         WHERE
             `librarydb`.`books`.id_books IN (SELECT 
                     librarydb.genre_join_table.id_books
@@ -74,6 +79,42 @@ class QueryFactory (object):
                     librarydb.genre_join_table.id_genre = '%i')
         GROUP BY `librarydb`.`books`.id_books;
         """ % id_book
+        return query
+
+    @staticmethod
+    def search_by_name_book(name_book):
+        query = """
+        SELECT `librarydb`.`books`.id_books
+            
+        FROM
+            `librarydb`.`books`
+        WHERE
+            `librarydb`.`books`.name_book = '%s'
+        """ % name_book
+        return query
+
+    @staticmethod
+    def search_by_name_author(name_book):
+        query = """
+        SELECT `librarydb`.`author`.id_author
+
+        FROM
+            `librarydb`.`author`
+        WHERE
+            `librarydb`.`author`.author_record = '%s'
+        """ % name_book
+        return query
+
+    @staticmethod
+    def search_by_name_genre(name_genre):
+        query = """
+        SELECT `librarydb`.`genre`.id_genre
+
+        FROM
+            `librarydb`.`genre`
+        WHERE
+            `librarydb`.`genre`.genre_record = '%s'
+        """ % name_genre
         return query
 
     @staticmethod
@@ -131,11 +172,11 @@ class QueryFactory (object):
         return query
 
     @staticmethod
-    def add_row_in_table_genre(author_name):
+    def add_row_in_table_author(author_name):
         if type(author_name) is not list:
-            query = "INSERT INTO `librarydb`.`author`(`genre_record`) VALUES ('%s');" % author_name
+            query = "INSERT INTO `librarydb`.`author`(`author_record`) VALUES ('%s');" % author_name
         else:
-            query = "INSERT INTO `librarydb`.`author`(`genre_record`) VALUES"
+            query = "INSERT INTO `librarydb`.`author`(`author_record`) VALUES"
             query += " ('" + "'),('".join(author_name) + "');"
         return query
 
@@ -178,27 +219,27 @@ class QueryFactory (object):
     @staticmethod
     def add_row_in_table_books(name_book, number_of_pages_book,
                                index_book_binding_type, release_date_book,
-                               index_udc, index_bbk, index_description, isbn):
+                               index_udc, index_bbk, isbn):
         if type (name_book) is not list:
             query = "INSERT INTO `librarydb`.`books`" \
                     "(`name_book`,`number_of_pages_book`," \
                     "`index_book_binding_type`,`release_date_book`," \
-                    "`index_udc`,`index_bbk`,`index_description`,`isbn`)" \
-                    " VALUES ('%s', %s, %s, %s, %s, %s, %s, '%s');" \
+                    "`index_udc`,`index_bbk`,`isbn`)" \
+                    " VALUES ('%s', %s, %s, %s, %s, %s, '%s');" \
                     % (name_book, str (number_of_pages_book), str (index_book_binding_type),
-                       str (release_date_book), str (index_udc), str (index_bbk), str (index_description), isbn)
+                       str (release_date_book), str (index_udc), str (index_bbk), isbn)
         else:
             query = "INSERT INTO `librarydb`.`books`" \
                     "(`name_book`,`number_of_pages_book`," \
                     "`index_book_binding_type`,`release_date_book`," \
-                    "`index_udc`,`index_bbk`,`index_description`,`isbn`)" \
+                    "`index_udc`,`index_bbk`,`isbn`)" \
                     " VALUES"
             iterator = 0
             while iterator < len(name_book):
                 query += "('" + name_book[iterator] + "'," + str(number_of_pages_book[iterator]) + "," +\
                          str(index_book_binding_type[iterator]) + "," + str(release_date_book[iterator]) + "," +\
                          str(index_udc[iterator]) + "," + str(index_bbk[iterator]) + "," +\
-                         str(index_description[iterator]) + ",'" + isbn[iterator] + "')"
+                         + isbn[iterator] + "')"
                 iterator += 1
                 if iterator < len(name_book):
                     query += ","
