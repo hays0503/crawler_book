@@ -94,6 +94,18 @@ class QueryFactory (object):
         return query
 
     @staticmethod
+    def search_by_binding_book(name_binding):
+        query = """
+        SELECT `librarydb`.`book_binding_type`.id_book_binding_type
+
+        FROM
+            `librarydb`.`book_binding_type`
+        WHERE
+            `librarydb`.`book_binding_type`.`binding_type` = '%s'
+        """ % name_book
+        return query
+
+    @staticmethod
     def search_by_name_author(name_book):
         query = """
         SELECT `librarydb`.`author`.id_author

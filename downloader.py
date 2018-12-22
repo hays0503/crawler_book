@@ -89,4 +89,4 @@ class InfoByPost:
 
 if __name__ == '__main__':
     info = InfoByPost()
-    info.info("https://www.flip.kz/catalog?prod=1272815")
+    info.info("https://www.flip.kz/catalog?prod=563600")
