@@ -102,7 +102,7 @@ class QueryFactory (object):
             `librarydb`.`book_binding_type`
         WHERE
             `librarydb`.`book_binding_type`.`binding_type` = '%s'
-        """ % name_book
+        """ % name_binding
         return query
 
     @staticmethod

@@ -12,12 +12,16 @@ class DatabaseInspector:
     username = ""
     password = ""
     database_name = ""
+    db = None
 
     def connect(self, host, username, password, database_name):
-        self.host = host, self.username = username, self.password = password, self.database_name = database_name
-        db = cymysql.connect(host=host, user=username, passwd=password, db=database_name)
+        self.host = host
+        self.username = username
+        self.password = password
+        self.database_name = database_name
+        self.db = cymysql.connect(host=host, user=username, passwd=password, db=database_name)
         # prepare a cursor object using cursor() method
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         # execute SQL query using execute() method.
         cursor.execute("SELECT VERSION()")
         # Fetch a single row using fetchone() method.
@@ -25,12 +29,13 @@ class DatabaseInspector:
         print
         "Database version : %s " % data
         # disconnect from server
-        return db
+        return self.db
 
     def read(self):
-        db = cymysql.connect(host=self.host, user=self.username, passwd=self.password, db=self.database_name)
+        if self.db is None:
+            return "database not connection"
         # prepare a cursor object using cursor() method
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         # execute SQL query using execute() method.
 
         index_book = 0
@@ -45,13 +50,13 @@ class DatabaseInspector:
                                                     1, 1,
                                                     '1-2-3-4-5')
         cursor.execute(query)
-        db.commit()
+        self.db.commit()
 
         # Добавление авторов
         query = QueryFactory.add_row_in_table_author(author)
         print(query)
         cursor.execute(query)
-        db.commit()
+        self.db.commit()
 
         # Взять индекс книги по названию
         query = QueryFactory.search_by_name_book(name_book)
@@ -59,7 +64,7 @@ class DatabaseInspector:
         cursor.execute(query)
         index_book = cursor.fetchall()[0][0]
         print(index_book)
-        db.commit()
+        self.db.commit()
 
         # Взять индекс автора по имени
         query = QueryFactory.search_by_name_author(author)
@@ -67,19 +72,19 @@ class DatabaseInspector:
         cursor.execute(query)
         index_author = cursor.fetchall()[0][0]
         print(index_author)
-        db.commit()
+        self.db.commit()
 
         # Cвязать авторов с книгой
         query = QueryFactory.add_row_in_author_join_table(index_book, index_author)
         print(query)
         cursor.execute(query)
-        db.commit()
+        self.db.commit()
 
         # Добавление жанр
         query = QueryFactory.add_row_in_table_genre(name_genre)
         print(query)
         cursor.execute(query)
-        db.commit()
+        self.db.commit()
 
         # Взять индекс жанра по названию
         query = QueryFactory.search_by_name_genre(name_genre)
@@ -87,105 +92,113 @@ class DatabaseInspector:
         cursor.execute(query)
         index_genre = cursor.fetchall()[0][0]
         print(index_genre)
-        db.commit()
+        self.db.commit()
 
         # Cвязать жанра с книгой
         query = QueryFactory.add_row_in_genre_join_table(index_book, index_genre)
         print(query)
         cursor.execute(query)
-        db.commit()
+        self.db.commit()
 
         query = QueryFactory.add_row_in_table_description("Ну хуй знает что тут можно написать")
         print(query)
         cursor.execute(query)
-        db.commit()
+        self.db.commit()
 
         # Fetch a single row using fetchone() method.
         #        data = cursor.fetchall()
         #        print(data)
         # disconnect from server
-        db.close()
+        self.db.close()
 
     def execute(self, query):
-        db = cymysql.connect(host=self.host, user=self.username, passwd=self.password, db=self.database_name)
+        if self.db is None:
+            return "database not connection"
         # prepare a cursor object using cursor() method
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         # execute SQL query using execute() method.
-        cursor.execute(query)
-        print(cursor.fetchall)
-        return 0
-
-    def add_book(self, name_book="", name_genre="", author="", isbn="", descriprion=""):
-            index_book = 0
-            index_author = 0
-            index_genre = 0
-
-            db = cymysql.connect(host=self.host, user=self.username, passwd=self.password, db=self.database_name)
-            # prepare a cursor object using cursor() method
-            cursor = db.cursor()
-
-            # Добавление книги          #number_of_pages_book
-            query = QueryFactory.add_row_in_table_books(name_book, 1, 1, 1,
-                                                        1, 1,
-                                                        isbn)
+        print(query)
+        try:
             cursor.execute(query)
-            db.commit()
+            self.db.commit()
+            data = cursor.fetchall()
+        except cymysql.err.IntegrityError:
+            return
+        return data
+
+    def what_is_index(self, query_object):
+        if self.db is None:
+            return "database not connection"
+        return self.execute(query_object)[0][0]
+
+    def add_book(self, name_book="", name_genre="", author="",
+                        isbn="", description="", number_of_pages_book=0,
+                            release_date=0, book_binding_type="", index_udc=0, index_bbk=0):
+
+            if self.db is None:
+                return "database not connection"
+
+            # prepare a cursor object using cursor() method
+            cursor = self.db.cursor()
+
+            index_book_binding_type = self.what_is_index(QueryFactory.search_by_binding_book(book_binding_type))
+
+            # Добавление книги
+            self.execute(QueryFactory.add_row_in_table_books(name_book = name_book,
+                                                             number_of_pages_book = number_of_pages_book,
+                                                             index_book_binding_type = index_book_binding_type,
+                                                             release_date_book = release_date,
+                                                             index_udc = index_udc,
+                                                             index_bbk = index_bbk,
+                                                             isbn = isbn))
 
             # Добавление авторов
-            query = QueryFactory.add_row_in_table_author(author)
-            print(query)
-            cursor.execute(query)
-            db.commit()
+            self.execute(QueryFactory.add_row_in_table_author(author))
 
             # Взять индекс книги по названию
-            query = QueryFactory.search_by_name_book(name_book)
-            print(query)
-            cursor.execute(query)
-            index_book = cursor.fetchall()[0][0]
-            print(index_book)
-            db.commit()
+            index_book = self.what_is_index(QueryFactory.search_by_name_book(name_book))
 
             # Взять индекс автора по имени
-            query = QueryFactory.search_by_name_author(author)
-            print(query)
-            cursor.execute(query)
-            index_author = cursor.fetchall()[0][0]
-            print(index_author)
-            db.commit()
+            index_author = self.what_is_index(QueryFactory.search_by_name_author(author))
 
             # Cвязать авторов с книгой
-            query = QueryFactory.add_row_in_author_join_table(index_book, index_author)
-            print(query)
-            cursor.execute(query)
-            db.commit()
+            self.execute(QueryFactory.add_row_in_author_join_table(index_book, index_author))
 
             # Добавление жанр
-            query = QueryFactory.add_row_in_table_genre(name_genre)
-            print(query)
-            cursor.execute(query)
-            db.commit()
+            self.execute(QueryFactory.add_row_in_table_genre(name_genre))
 
             # Взять индекс жанра по названию
-            query = QueryFactory.search_by_name_genre(name_genre)
-            print(query)
-            cursor.execute(query)
-            index_genre = cursor.fetchall()[0][0]
-            print(index_genre)
-            db.commit()
+            index_genre = self.what_is_index(QueryFactory.search_by_binding_book(book_binding_type))
 
             # Cвязать жанра с книгой
-            query = QueryFactory.add_row_in_genre_join_table(index_book, index_genre)
-            print(query)
-            cursor.execute(query)
-            db.commit()
+            self.execute(QueryFactory.add_row_in_genre_join_table(index_book, index_genre))
 
-            query = QueryFactory.add_row_in_table_description(descriprion)
-            print(query)
-            cursor.execute(query)
-            db.commit()
+            # Добавить описание книге
+            self.execute(QueryFactory.add_row_in_table_description(description))
+
 
 
 if __name__ == '__main__':
     db = DatabaseInspector()
-    db.read('127.0.0.1', 'hays0503', 'hays0503', 'librarydb')
-    db.execute(QueryFactory.search_by_binding_book('мягкая обложка'))
+    db.connect('127.0.0.1', 'hays0503', 'hays0503', 'librarydb')
+
+    name_book = 'Хуй'
+    name_genre = 'Хуйня внеземная'
+    author = 'Пизда Ивановна'
+    description = "description description description description"
+    isbn = "12345"
+    index_bbk = 1
+    index_udc = 1
+    number_of_pages_book = 200
+    release_date = 2007
+    book_binding_type = "мягкая обложка"
+    db.add_book(name_book = name_book,
+                name_genre = name_genre,
+                author=author,
+                isbn = isbn,
+                index_udc = index_udc,
+                index_bbk = index_bbk,
+                description = description,
+                number_of_pages_book = number_of_pages_book,
+                release_date = release_date,
+                book_binding_type = book_binding_type)
