@@ -132,7 +132,7 @@ class DatabaseInspector:
 
     def add_book(self, authors, name_genre, name_book="",
                  isbn="", description="", number_of_pages_book=0,
-                 release_date=0, book_binding_type="", index_udc=0, index_bbk=0):
+                 release_date=0, book_binding_type="", index_udc=0, index_bbk=0, publisher=""):
 
         if self.db is None:
             return "database not connection"
@@ -141,6 +141,7 @@ class DatabaseInspector:
         cursor = self.db.cursor()
 
         index_book_binding_type = self.what_is_index(QueryFactory.search_by_binding_book(book_binding_type))
+        index_publisher = self.what_is_index(QueryFactory.search_by_publisher_name(publisher))
 
         # Добавление книги
         self.execute(QueryFactory.add_row_in_table_books(name_book=name_book,
@@ -149,7 +150,8 @@ class DatabaseInspector:
                                                          release_date_book=release_date,
                                                          index_udc=index_udc,
                                                          index_bbk=index_bbk,
-                                                         isbn=isbn))
+                                                         isbn=isbn,
+                                                         index_publisher=index_publisher))
 
         # Добавление авторов
         for author_book in authors:
@@ -191,6 +193,7 @@ if __name__ == '__main__':
     name_book = 'Хуй'
     name_genre = ['Хуйня внеземная']
     author = ['Пизда Ивановна', 'Владимир серый хуй']
+    publisher = 'Аст'
     description = "description description description description"
     isbn = "12345"
     index_bbk = 1
@@ -207,4 +210,5 @@ if __name__ == '__main__':
                 description=description,
                 number_of_pages_book=number_of_pages_book,
                 release_date=release_date,
-                book_binding_type=book_binding_type)
+                book_binding_type=book_binding_type,
+                publisher=publisher)
