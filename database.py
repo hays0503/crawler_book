@@ -185,7 +185,7 @@ class DatabaseInspector:
         # Добавить описание книге
         self.execute(QueryFactory.add_row_in_table_description(description))
 
-
+"""
 if __name__ == '__main__':
     db = DatabaseInspector()
     db.connect('127.0.0.1', 'hays0503', 'hays0503', 'librarydb')
@@ -212,3 +212,4 @@ if __name__ == '__main__':
                 release_date=release_date,
                 book_binding_type=book_binding_type,
                 publisher=publisher)
+"""

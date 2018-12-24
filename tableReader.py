@@ -29,8 +29,8 @@ class TableInspector:
                 other_info = str(turple[0]).rsplit(', ', 4)
                 other_info.append(turple[1])
                 self.other_description.append(other_info)
-        for i in range(len(self.other_description)):
-            print(self.other_description.__getitem__(i))
+        #        for i in range(len(self.other_description)):
+        #    print(self.other_description.__getitem__(i))
         return self.other_description
 
     def name_book(self, row=0):
@@ -57,7 +57,7 @@ class TableInspector:
     def url(self, row=0):
         return self.other_description.__getitem__(row).__getitem__(5)
 
-
+"""
 if __name__ == '__main__':
     table_Inspector = TableInspector(patch_to_file="prices_s2.xlsx")
     print(
@@ -67,3 +67,4 @@ if __name__ == '__main__':
         table_Inspector.book_binding_type(1) + ':4\n' +
         str(table_Inspector.number_of_pages_book(1)) + ':5\n'+
         str(table_Inspector.url(1)) + ':6\n')
+"""

@@ -13,6 +13,12 @@ class InfoByPost:
     @brief Парсер информации о посте
     """
 
+    isbn = None
+    description = None
+    author = None
+    genre = None
+
+
     def __isbn(self, data):
         """!
         @brief Isbn Parser
@@ -22,7 +28,7 @@ class InfoByPost:
         """
         soup = BeautifulSoup(''.join(data), 'html.parser')
         last_links = soup.find_all(string=re.compile("\d\d\d-\d\d\d-\d\d-\d\d\d\d-\d"))
-        print(last_links)
+        self.isbn = last_links
 
     def __description(self, data):
         """!
@@ -33,9 +39,9 @@ class InfoByPost:
         """
         soup = BeautifulSoup(''.join(data), 'html.parser')
         last_links = soup.find_all('span', itemprop="description")
-        print(last_links[0].text)
+        self.description = last_links[0].text
 
-    def __autor(self, data):
+    def __author(self, data):
         """!
         @brief Parser author(s) of the book
         @brief Парсер автора(ов) книги
@@ -50,8 +56,7 @@ class InfoByPost:
         list_autor = []
         for name_autor in last_links:
             list_autor.append(name_autor.text)
-        for name_autor in list_autor:
-            print(name_autor)
+        autor = list_autor
 
     def __genre(self, data):
         """!
@@ -68,9 +73,7 @@ class InfoByPost:
         list_autor = []
         for name_autor in last_links:
             list_autor.append(name_autor.text)
-        print('\n')
-        for name_autor in list_autor:
-            print(name_autor)
+        self.author = list_autor
 
     def info(self, url):
         """!
@@ -83,10 +86,11 @@ class InfoByPost:
         data = rc.text
         self.__isbn(data)
         self.__description(data)
-        self.__autor(data)
+        self.__author(data)
         self.__genre(data)
 
-
+"""
 if __name__ == '__main__':
     info = InfoByPost()
     info.info("https://www.flip.kz/catalog?prod=563600")
+"""

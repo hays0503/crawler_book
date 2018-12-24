@@ -328,7 +328,7 @@ class QueryFactory (object):
             query += ";"
         return query
 
-
+"""
 if __name__ == '__main__':
     name_book = 'aaa'
     number_of_pages_book = 1
@@ -341,3 +341,4 @@ if __name__ == '__main__':
     author = 'ddd'
     print(type(author) is list)
     print(QueryFactory.show_all())
+"""
