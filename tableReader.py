@@ -29,33 +29,58 @@ class TableInspector:
                 other_info = str(turple[0]).rsplit(', ', 4)
                 other_info.append(turple[1])
                 self.other_description.append(other_info)
-        #        for i in range(len(self.other_description)):
-        #    print(self.other_description.__getitem__(i))
+        for i in range(len(self.other_description)):
+           print(self.other_description.__getitem__(i))
         return self.other_description
 
     def name_book(self, row=0):
-        return self.other_description.__getitem__(row).__getitem__(0)
+        if not self.other_description.__getitem__(row).__getitem__(0).split(' ')[0].isdigit():
+            return self.other_description.__getitem__(row).__getitem__(0)
+        else:
+            return -1
 
     def publisher_book(self, row=0):
-        return self.other_description.__getitem__(row).__getitem__(1)
+        if not self.other_description.__getitem__(row).__getitem__(1).split(' ')[0].isdigit():
+            return self.other_description.__getitem__(row).__getitem__(1)
+        else:
+            return -1
+
 
     def release_date_book(self, row=0):
-        return int(self.other_description.__getitem__(row).__getitem__(2).split(' ')[0])
+        shift_data = 2
+        if len(self.other_description.__getitem__(row)) == 5:
+            shift_data -= 1
+        if self.other_description.__getitem__(row).__getitem__(shift_data).split(' ')[0].isdigit():
+            return int(self.other_description.__getitem__(row).__getitem__(shift_data).split(' ')[0])
+        else:
+            return -1
 
     def book_binding_type(self, row=0):
-        return self.other_description.__getitem__(row).__getitem__(3)
+        shift_data = 3
+        if len(self.other_description.__getitem__(row)) == 5:
+            shift_data -= 1
+        if not self.other_description.__getitem__(row).__getitem__(shift_data).split(' ')[0].isdigit():
+            return self.other_description.__getitem__(row).__getitem__(shift_data)
+        else:
+            return -1
 
     def number_of_pages_book(self, row=0):
-        return int(self.other_description.__getitem__(row).__getitem__(4).split(' ')[0])
-
-    def autor_book(self, row=0):
-        return self.other_description.__getitem__(row).__getitem__(1)
-
-    def description_book(self, row=0):
-        return self.other_description.__getitem__(row).__getitem__(2)
+        shift_data = 4
+        if len(self.other_description.__getitem__(row)) == 5:
+            shift_data -= 1
+        if self.other_description.__getitem__(row).__getitem__(shift_data).split(' ')[0].isdigit():
+            return int(self.other_description.__getitem__(row).__getitem__(shift_data).split(' ')[0])
+        else:
+            return -1
 
     def url(self, row=0):
-        return self.other_description.__getitem__(row).__getitem__(5)
+        shift_data = 5
+        if len(self.other_description.__getitem__(row)) == 5:
+            shift_data -= 1
+        if not self.other_description.__getitem__(row).__getitem__(shift_data).split(' ')[0].isdigit():
+            return self.other_description.__getitem__(row).__getitem__(shift_data)
+        else:
+            return -1
 
 """
 if __name__ == '__main__':

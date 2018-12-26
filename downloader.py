@@ -27,7 +27,7 @@ class InfoByPost:
         @return str
         """
         soup = BeautifulSoup(''.join(data), 'html.parser')
-        last_links = soup.find_all(string=re.compile("\d\d\d-\d\d\d-\d\d-\d\d\d\d-\d"))
+        last_links = soup.find_all(string=re.compile(r"(\d\d\d-\d\d\d-\d\d-\d\d\d\d-\d|\d-\d\d\d\d\d-\d\d\d-(\d|\w))"))
         self.isbn = last_links
 
     def __description(self, data):
@@ -56,7 +56,7 @@ class InfoByPost:
         list_autor = []
         for name_autor in last_links:
             list_autor.append(name_autor.text)
-        autor = list_autor
+        self.author = list_autor
 
     def __genre(self, data):
         """!
@@ -73,7 +73,7 @@ class InfoByPost:
         list_autor = []
         for name_autor in last_links:
             list_autor.append(name_autor.text)
-        self.author = list_autor
+        self.genre = list_autor
 
     def info(self, url):
         """!
@@ -92,5 +92,5 @@ class InfoByPost:
 """
 if __name__ == '__main__':
     info = InfoByPost()
-    info.info("https://www.flip.kz/catalog?prod=563600")
+    info.info("https://www.flip.kz/catalog?prod=35")
 """
