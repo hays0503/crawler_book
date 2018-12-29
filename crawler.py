@@ -4,6 +4,7 @@
 
 from tableReader import TableInspector
 from downloader import InfoByPost
+import cProfile
 
 class Crawler():
     """!
@@ -43,11 +44,9 @@ class Crawler():
             self.info_by_book["description"] = self.searth_by_post.description
             self.info_by_book["author"] = self.searth_by_post.author
             self.info_by_book["genre"] = self.searth_by_post.genre
-            print(self.info_by_book)
-            print("")
-            print("----------------------------------------")
+            print(str(iterator) + " : " + str(range(num_books)))
             self.books.append(self.info_by_book)
 
 if __name__ == '__main__':
     object_crawler = Crawler()
-    object_crawler.start()
+    cProfile.run(object_crawler.start())
