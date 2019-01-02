@@ -27,7 +27,7 @@ class InfoByPost:
         @return str
         """
         soup = BeautifulSoup(''.join(data), 'html.parser')
-        last_links = soup.find_all(string=re.compile(r"(\d\d\d-\d\d\d-\d\d-\d\d\d\d-\d|\d-\d\d\d\d\d-\d\d\d-(\d|\w))"))
+        last_links = soup.find(string=re.compile(r"(\d\d\d-\d\d\d-\d\d-\d\d\d\d-\d|\d\d\d-\d-\d\d\d\d-\d\d\d\d-\d|\d-\d\d\d\d\d-\d\d\d-(\d|\w))"))
         self.isbn = last_links
 
     def __description(self, data):

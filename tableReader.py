@@ -29,8 +29,8 @@ class TableInspector:
                 other_info = str(turple[0]).rsplit(', ', 4)
                 other_info.append(turple[1])
                 self.other_description.append(other_info)
-        for i in range(len(self.other_description)):
-           print(self.other_description.__getitem__(i))
+        #for i in range(len(self.other_description)):
+           #print(self.other_description.__getitem__(i))
         return self.other_description
 
     def name_book(self, row=0):

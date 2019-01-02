@@ -121,13 +121,15 @@ class DatabaseInspector:
             cursor.execute(query)
             self.db.commit()
             data = cursor.fetchall()
+            if len(data) == 0:
+                data = [(-1, 0)]
         except cymysql.err.IntegrityError:
             return
         return data
 
     def what_is_index(self, query_object):
         if self.db is None:
-            return "database not connection"
+            return -1
         return self.execute(query_object)[0][0]
 
     def add_book(self, authors, name_genre, name_book="",
@@ -141,7 +143,11 @@ class DatabaseInspector:
         cursor = self.db.cursor()
 
         index_book_binding_type = self.what_is_index(QueryFactory.search_by_binding_book(book_binding_type))
+
         index_publisher = self.what_is_index(QueryFactory.search_by_publisher_name(publisher))
+        if index_publisher == -1:
+            self.execute(QueryFactory.add_row_in_table_publisher(publisher))
+            index_publisher = self.what_is_index(QueryFactory.search_by_publisher_name(publisher))
 
         # Добавление книги
         self.execute(QueryFactory.add_row_in_table_books(name_book=name_book,
