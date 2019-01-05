@@ -28,7 +28,7 @@ class InfoByPost:
         @return str
         """
         soup = BeautifulSoup(''.join(data), 'html.parser')
-        regexp = r"(\d\d\d-\d-\d\d\d-\d\d\d\d-\d|\d\d\d-\d\d\d-\d\d-\d\d\d\d-\d|\d\d\d-\d-\d\d\d\d-\d\d\d\d-\d|\d-\d\d\d\d\d-\d\d\d-(\d|\w))"
+        regexp = r"(\d\d\d-\d-\d\d-\d\d\d\d\d\d-\d|\d\d\d-\d\d\d-\d\d\d\d\d-\d-\d|\d\d\d-\d-\d\d\d-\d\d\d\d-\d|\d\d\d-\d\d\d-\d\d-\d\d\d\d-\d|\d\d\d-\d-\d\d\d\d-\d\d\d\d-\d|\d-\d\d\d\d\d-\d\d\d-(\d|\w))"
         last_links = soup.find(string=re.compile(regexp))
         self.isbn = last_links
 

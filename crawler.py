@@ -56,7 +56,7 @@ class Crawler():
 
     def start(self):
         num_books = len(self.object_table_inspector.other_description)
-        for iterator in range(num_books):
+        for iterator in range(450,num_books):
             self.searth_by_post.info(self.object_table_inspector.url(iterator))
             self.info_by_book["name_book"] = self.object_table_inspector.name_book(iterator)
             self.info_by_book["number_of_pages_book"] = self.object_table_inspector.number_of_pages_book(iterator)
