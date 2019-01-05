@@ -61,7 +61,7 @@ class Crawler():
             self.info_by_book["name_book"] = self.object_table_inspector.name_book(iterator)
             self.info_by_book["number_of_pages_book"] = self.object_table_inspector.number_of_pages_book(iterator)
             self.info_by_book["book_binding_type"] = self.object_table_inspector.book_binding_type(iterator)
-            self.info_by_book["release_date_book"] = self.self.searth_by_post.
+            self.info_by_book["release_date_book"] = self.searth_by_post.release_year_data
             self.info_by_book["index_udc"] = "1"
             self.info_by_book["index_bbk"] = "1"
             self.info_by_book["publisher"] = self.object_table_inspector.publisher_book(iterator)
