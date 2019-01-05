@@ -1,7 +1,6 @@
 """!
 @package crawler
 """
-from IPython.core.release import authors
 
 from tableReader import TableInspector
 from downloader import InfoByPost
@@ -57,12 +56,12 @@ class Crawler():
 
     def start(self):
         num_books = len(self.object_table_inspector.other_description)
-        for iterator in range(457, num_books):
+        for iterator in range(num_books):
             self.searth_by_post.info(self.object_table_inspector.url(iterator))
             self.info_by_book["name_book"] = self.object_table_inspector.name_book(iterator)
             self.info_by_book["number_of_pages_book"] = self.object_table_inspector.number_of_pages_book(iterator)
             self.info_by_book["book_binding_type"] = self.object_table_inspector.book_binding_type(iterator)
-            self.info_by_book["release_date_book"] = self.object_table_inspector.release_date_book(iterator)
+            self.info_by_book["release_date_book"] = self.self.searth_by_post.
             self.info_by_book["index_udc"] = "1"
             self.info_by_book["index_bbk"] = "1"
             self.info_by_book["publisher"] = self.object_table_inspector.publisher_book(iterator)

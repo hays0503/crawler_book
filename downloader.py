@@ -17,6 +17,7 @@ class InfoByPost:
     description = None
     author = None
     genre = None
+    release_year_data = None
 
 
     def __isbn(self, data):
@@ -40,6 +41,17 @@ class InfoByPost:
         soup = BeautifulSoup(''.join(data), 'html.parser')
         last_links = soup.find_all('span', itemprop="description")
         self.description = last_links[0].text
+
+    def __release_year_data(self, data):
+        """!
+        @brief release date book Parser
+        @brief Парсер даты выпуска
+        @param [in] str url
+        @return str
+        """
+        soup = BeautifulSoup(''.join(data), 'html.parser')
+        last_links = soup.find(string=re.compile("\d\d\d\d г"))
+        self.release_year_data = int(str(last_links).split(' ')[1])
 
     def __author(self, data):
         """!
@@ -88,6 +100,9 @@ class InfoByPost:
         self.__description(data)
         self.__author(data)
         self.__genre(data)
+        self.__release_year_data(data)
+
+
 
 """
 if __name__ == '__main__':
