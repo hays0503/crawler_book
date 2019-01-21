@@ -390,6 +390,79 @@ class QueryFactory (object):
             query += ";"
         return query
 
+    @staticmethod
+    def get_author_null_id():
+        query = """
+            SELECT 
+                librarydb.books.id_books
+            FROM
+                librarydb.books
+            WHERE
+            NOT librarydb.books.id_books IN (SELECT 
+                `librarydb`.`books`.id_books
+            FROM
+                `librarydb`.`books`
+                    JOIN
+                `librarydb`.`genre_join_table` ON `librarydb`.`genre_join_table`.id_books = `librarydb`.`books`.id_books
+                    JOIN
+                `librarydb`.`genre` ON `librarydb`.`genre`.id_genre = `librarydb`.`genre_join_table`.id_genre
+                    JOIN
+                `librarydb`.`book_binding_type` ON `librarydb`.`book_binding_type`.id_book_binding_type = 
+                `librarydb`.`books`.index_book_binding_type
+                    JOIN
+                `librarydb`.`publisher` ON `librarydb`.`publisher`.id_publisher = `librarydb`.`books`.index_publisher
+                    JOIN
+                `librarydb`.`udc` ON `librarydb`.`udc`.id_udc = `librarydb`.`books`.index_udc
+                    JOIN
+                `librarydb`.`bbk` ON `librarydb`.`bbk`.id_bbk = `librarydb`.`books`.index_bbk
+            GROUP BY `librarydb`.`books`.id_books);
+        """
+        query1 = """        
+        SELECT 
+            `librarydb`.`books`.id_books
+        FROM
+            librarydb.books
+        WHERE
+            NOT `librarydb`.`books`.id_books IN (SELECT 
+                    `librarydb`.`books`.id_books
+                FROM
+                    `librarydb`.`books`
+                        JOIN
+                    `librarydb`.`author_join_table` ON `librarydb`.`author_join_table`.id_books =
+                     `librarydb`.`books`.id_books
+                        JOIN
+                    `librarydb`.`author` ON `librarydb`.`author`.id_author = `librarydb`.`author_join_table`.id_author
+                        JOIN
+                    `librarydb`.`genre_join_table` ON `librarydb`.`genre_join_table`.id_books =
+                     `librarydb`.`books`.id_books
+                        JOIN
+                    `librarydb`.`genre` ON `librarydb`.`genre`.id_genre = `librarydb`.`genre_join_table`.id_genre
+                        JOIN
+                    `librarydb`.`book_binding_type` ON `librarydb`.`book_binding_type`.id_book_binding_type =
+                     `librarydb`.`books`.index_book_binding_type
+                        JOIN
+                    `librarydb`.`publisher` ON `librarydb`.`publisher`.id_publisher =
+                     `librarydb`.`books`.index_publisher
+                        JOIN
+                    `librarydb`.`udc` ON `librarydb`.`udc`.id_udc = `librarydb`.`books`.index_udc
+                        JOIN
+                    `librarydb`.`bbk` ON `librarydb`.`bbk`.id_bbk = `librarydb`.`books`.index_bbk
+                GROUP BY `librarydb`.`books`.id_books);
+        """
+
+        return query1
+
+    @staticmethod
+    def get_genre_null_id():
+        query = """
+        SELECT librarydb.books.id_books
+        FROM librarydb.books
+        WHERE NOT librarydb.books.id_books IN (
+        SELECT librarydb.genre_join_table.id_books FROM librarydb.genre_join_table);
+        """
+        return query
+
+
 """
 if __name__ == '__main__':
     name_book = 'aaa'

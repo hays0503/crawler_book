@@ -104,6 +104,32 @@ class Crawler():
                                                     item[9], item[10], item[11])
             )
 
+    def change_author_null(self):
+        self.object_database_inspector.connect(
+            '127.0.0.1',
+            'hays0503',
+            'hays0503',
+            'librarydb'
+        )
+        list = self.object_database_inspector.execute(QueryFactory.get_author_null_id())
+        for item in list:
+            self.object_database_inspector.execute(
+                QueryFactory.add_row_in_author_join_table(item[0], 1)
+            )
+
+    def change_genre_null(self):
+        self.object_database_inspector.connect(
+            '127.0.0.1',
+            'hays0503',
+            'hays0503',
+            'librarydb'
+        )
+        list = self.object_database_inspector.execute(QueryFactory.get_genre_null_id())
+        for item in list:
+            self.object_database_inspector.execute(
+                QueryFactory.add_row_in_genre_join_table(item[0], 1)
+            )
+
 
     def start(self):
         for file in self.object_fsdb.list_file:
@@ -139,5 +165,5 @@ class Crawler():
 
 if __name__ == '__main__':
     object_crawler = Crawler()
-    object_crawler.cache()
+    object_crawler.start()
 
