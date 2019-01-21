@@ -123,7 +123,13 @@ class DatabaseInspector:
             data = cursor.fetchall()
             if len(data) == 0:
                 data = [(-1, 0)]
-        except cymysql.err.IntegrityError:
+        except cymysql.err.IntegrityError as e:
+            print(e.errmsg)
+            print(e.errno)
+            return
+        except cymysql.err.Error as e:
+            print(e.errmsg)
+            print(e.errno)
             return
         return data
 
@@ -157,7 +163,8 @@ class DatabaseInspector:
                                                          index_udc=index_udc,
                                                          index_bbk=index_bbk,
                                                          isbn=isbn,
-                                                         index_publisher=index_publisher))
+                                                         index_publisher=index_publisher,
+                                                         description_record = description))
 
         # Добавление авторов
         for author_book in authors:
@@ -187,9 +194,6 @@ class DatabaseInspector:
         # Cвязать жанра с книгой
         for genre in index_genre:
             self.execute(QueryFactory.add_row_in_genre_join_table(index_book, genre))
-
-        # Добавить описание книге
-        self.execute(QueryFactory.add_row_in_table_description(description))
 
 """
 if __name__ == '__main__':

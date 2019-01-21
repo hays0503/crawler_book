@@ -28,9 +28,27 @@ class InfoByPost:
         @return str
         """
         soup = BeautifulSoup(''.join(data), 'html.parser')
-        regexp = r"(\d\d\d-\d-\d\d-\d\d\d\d\d\d-\d|\d\d\d-\d\d\d-\d\d\d\d\d-\d-\d|\d\d\d-\d-\d\d\d-\d\d\d\d-\d|\d\d\d-\d\d\d-\d\d-\d\d\d\d-\d|\d\d\d-\d-\d\d\d\d-\d\d\d\d-\d|\d-\d\d\d\d\d-\d\d\d-(\d|\w))"
+        regexp = r"(\d-\d\d\d\d-\d\d\d\d-(\d|\w)|" \
+                 r"\d-\d\d-\d\d\d\d\d\d-\d|" \
+                 r"\d\d\d-\d\d\d-\d\d\d-\d\d\d-\d|" \
+                 r"\d\d\d\d\d\d\d\d\d\d\d\d\d|" \
+                 r"\d\d\d-\d-\d\d\d\d\d\d\d-\d-\d|" \
+                 r"\d-\d\d\d-\d\d\d\d\d-\d|" \
+                 r"\d-\d\d\d\d-\d\d\d\d-\d|" \
+                 r"\d\d\d-\d-\d\d-\d\d\d\d\d\d-\d|" \
+                 r"\d\d\d-\d-\d\d\d\d\d\d-\d\d-\d|" \
+                 r"\d\d\d-\d\d\d\d-\d\d-\d|" \
+                 r"\d\d\d-\d-\d\d\d-\d\d\d\d\d-\d|" \
+                 r"\d\d\d-\d-\d\d-\d\d\d\d\d\d-\d|" \
+                 r"\d\d\d-\d\d\d-\d\d\d\d\d-\d-\d|" \
+                 r"\d\d\d-\d-\d\d\d-\d\d\d\d-\d|" \
+                 r"\d\d\d-\d\d\d-\d\d-\d\d\d\d-\d|" \
+                 r"\d\d\d-\d-\d\d\d\d-\d\d\d\d-\d|" \
+                 r"\d-\d\d\d-\d\d\d\d\d-(\d|\w)|" \
+                 r"\d-\d\d\d\d\d-\d\d\d-(\d|\w))"
         last_links = soup.find(string=re.compile(regexp))
-        self.isbn = last_links
+        text = last_links
+        self.isbn = re.sub(" ","",text)
 
     def __description(self, data):
         """!
@@ -41,6 +59,9 @@ class InfoByPost:
         """
         soup = BeautifulSoup(''.join(data), 'html.parser')
         last_links = soup.find_all('span', itemprop="description")
+        if len(last_links) == 0:
+            self.description = " "
+            return
         text = last_links[0].text
         self.description = re.sub("'","",text)
 
@@ -51,9 +72,22 @@ class InfoByPost:
         @param [in] str url
         @return str
         """
-        soup = BeautifulSoup(''.join(data), 'html.parser')
-        last_links = soup.find(string=re.compile(",\s\d\d\d\d\sг"))
-        self.release_year_data = int(str(last_links).split(' ')[1])
+        try:
+            soup = BeautifulSoup(''.join(data), 'html.parser')
+            if soup.find(string=re.compile(",\s\d\d\d\d\sг")) is not None:
+                last_links = soup.find(string=re.compile(",\s\d\d\d\d\sг")).split(' ')
+                print(last_links)
+                if str(last_links[1]).isdigit():
+                    self.release_year_data = int(last_links[1])
+            else:
+                last_links = soup.find(string = re.compile("\w\s\d\d\d\d\sг"))
+                print(last_links)
+                if last_links is not None:
+                    self.release_year_data = int(str(last_links).split(' ')[3])
+            if self.release_year_data is None:
+                self.release_year_data = 0
+        except ValueError:
+            self.release_year_data = 0
 
     def __author(self, data):
         """!
@@ -69,7 +103,8 @@ class InfoByPost:
         last_links = soup.find_all('b', itemprop="name")
         list_autor = []
         for name_autor in last_links:
-            list_autor.append(name_autor.text)
+            text = name_autor.text
+            list_autor.append(re.sub("'","",text))
         self.author = list_autor
 
     def __genre(self, data):
@@ -85,8 +120,9 @@ class InfoByPost:
         soup = BeautifulSoup(str(last_links), 'html.parser')
         last_links = soup.find_all('span', {"property": "name"})
         list_autor = []
-        for name_autor in last_links:
-            list_autor.append(name_autor.text)
+        for name_genre in last_links:
+            text = name_genre.text
+            list_autor.append(re.sub("'","",text))
         self.genre = list_autor
 
     def info(self, url):
@@ -98,16 +134,14 @@ class InfoByPost:
         """
         rc = requests.get(url)
         data = rc.text
+        self.__release_year_data(data)
         self.__isbn(data)
         self.__description(data)
         self.__author(data)
         self.__genre(data)
-        self.__release_year_data(data)
-
-
 
 """
 if __name__ == '__main__':
     info = InfoByPost()
-    info.info("https://www.flip.kz/catalog?prod=35")
+    info.info("https://www.flip.kz/catalog?prod=43304")
 """

@@ -1,3 +1,5 @@
+import re
+
 import openpyxl
 
 """
@@ -18,6 +20,7 @@ class TableInspector:
         """
             @brief Считывает страницу документа возвращая объект страница
         """
+        self.other_description.clear()
         wb = openpyxl.load_workbook(filename=patch_to_file,
                                     read_only=True)
         name_sheet = wb.sheetnames
@@ -34,20 +37,23 @@ class TableInspector:
         return self.other_description
 
     def name_book(self, row=0):
-        if not self.other_description.__getitem__(row).__getitem__(0).split(' ')[0].isdigit():
-            return self.other_description.__getitem__(row).__getitem__(0)
-        else:
-            return -1
+        name = self.other_description.__getitem__(row).__getitem__(0)
+        return re.sub("'", "", name)
 
     def publisher_book(self, row=0):
+        if len(self.other_description.__getitem__(row)) <= 3:
+            return 0
         if not self.other_description.__getitem__(row).__getitem__(1).split(' ')[0].isdigit():
-            return self.other_description.__getitem__(row).__getitem__(1)
+            publisher = self.other_description.__getitem__(row).__getitem__(1)
+            return re.sub("'","",publisher)
         else:
             return -1
 
 
     def release_date_book(self, row=0):
         shift_data = 2
+        if len(self.other_description.__getitem__(row)) <= 3:
+            return 0
         if len(self.other_description.__getitem__(row)) == 5:
             shift_data -= 1
         if self.other_description.__getitem__(row).__getitem__(shift_data).split(' ')[0].isdigit():
@@ -57,6 +63,8 @@ class TableInspector:
 
     def book_binding_type(self, row=0):
         shift_data = 3
+        if len(self.other_description.__getitem__(row)) <= 3:
+            return 0
         if len(self.other_description.__getitem__(row)) == 5:
             shift_data -= 1
         if not self.other_description.__getitem__(row).__getitem__(shift_data).split(' ')[0].isdigit():
@@ -66,8 +74,13 @@ class TableInspector:
 
     def number_of_pages_book(self, row=0):
         shift_data = 4
+        if len(self.other_description.__getitem__(row)) <= 3:
+            return 0
         if len(self.other_description.__getitem__(row)) == 5:
             shift_data -= 1
+        else:
+            if len(self.other_description.__getitem__(row)) == 4:
+                return 0
         if self.other_description.__getitem__(row).__getitem__(shift_data).split(' ')[0].isdigit():
             return int(self.other_description.__getitem__(row).__getitem__(shift_data).split(' ')[0])
         else:
@@ -75,12 +88,17 @@ class TableInspector:
 
     def url(self, row=0):
         shift_data = 5
+        print(self.other_description.__getitem__(row))
         if len(self.other_description.__getitem__(row)) == 5:
             shift_data -= 1
-        if not self.other_description.__getitem__(row).__getitem__(shift_data).split(' ')[0].isdigit():
-            return self.other_description.__getitem__(row).__getitem__(shift_data)
-        else:
-            return -1
+        if len(self.other_description.__getitem__(row)) == 4:
+            shift_data -= 2
+        if len(self.other_description.__getitem__(row)) == 3:
+            shift_data -= 3
+        if len(self.other_description.__getitem__(row)) == 2:
+            shift_data -= 4
+        return self.other_description.__getitem__(row).__getitem__(shift_data)
+
 
 """
 if __name__ == '__main__':

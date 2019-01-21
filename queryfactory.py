@@ -11,17 +11,20 @@ class QueryFactory (object):
 
     @staticmethod
     def show_all():
-        query = """SELECT 
+        query ="""
+            SELECT 
                 `librarydb`.`books`.id_books,
                 `librarydb`.`books`.name_book,
-                GROUP_CONCAT(DISTINCT `librarydb`.`book_binding_type`.binding_type),
-                `librarydb`.`udc`.udc_record,
-                `librarydb`.`bbk`.bbk_record,
-                `librarydb`.`books`.isbn,
-                `librarydb`.`publisher`.publisher_record,
                 GROUP_CONCAT(DISTINCT `librarydb`.`author`.author_record),
                 GROUP_CONCAT(DISTINCT `librarydb`.`genre`.genre_record),
-                GROUP_CONCAT(DISTINCT `librarydb`.`description`.description_record)
+                `librarydb`.`bbk`.bbk_record,
+                `librarydb`.`udc`.udc_record,
+                `librarydb`.`books`.isbn,
+                `librarydb`.`publisher`.publisher_record,
+                `librarydb`.`books`.number_of_pages_book,
+                GROUP_CONCAT(DISTINCT `librarydb`.`book_binding_type`.binding_type),
+                `librarydb`.`books`.description_record,
+                `librarydb`.`books`.`release_date_book`
             FROM
                 `librarydb`.`books`
                     JOIN
@@ -32,8 +35,6 @@ class QueryFactory (object):
                 `librarydb`.`genre_join_table` ON `librarydb`.`genre_join_table`.id_books = `librarydb`.`books`.id_books
                     JOIN
                 `librarydb`.`genre` ON `librarydb`.`genre`.id_genre = `librarydb`.`genre_join_table`.id_genre
-                    JOIN
-                `librarydb`.`description` ON `librarydb`.`description`.id_books = `librarydb`.`books`.id_books
                     JOIN
                 `librarydb`.`book_binding_type` ON `librarydb`.`book_binding_type`.id_book_binding_type = `librarydb`.`books`.index_book_binding_type
                     JOIN
@@ -88,6 +89,17 @@ class QueryFactory (object):
                     librarydb.genre_join_table.id_genre = '%i')
         GROUP BY `librarydb`.`books`.id_books;
         """ % id_book
+        return query
+
+    @staticmethod
+    def search_by_file_name(file_name):
+        query = """
+          SELECT `librarydb`.`filetables`.number_of_row
+          FROM
+              `librarydb`.`filetables`
+          WHERE
+              `librarydb`.`filetables`.file_name = '%s'
+          """ % file_name
         return query
 
     @staticmethod
@@ -259,33 +271,83 @@ class QueryFactory (object):
         return query
 
     @staticmethod
+    def add_row_in_table_file_tables(file_name, number_of_row):
+        if type(file_name) is not list:
+            query = "INSERT INTO `librarydb`.`filetables`(`file_name`, `number_of_row`)" \
+                    " VALUES ('%s', %s);" % (str(file_name), str(number_of_row))
+        return query
+
+    @staticmethod
+    def update_row_in_table_file_tables(file_name, number_of_row):
+        if type(file_name) is not list:
+            query = "UPDATE `librarydb`.`filetables` SET `number_of_row` = '%s' " \
+                    "WHERE `file_name` = '%s';" % (str(number_of_row), str(file_name))
+        return query
+
+    @staticmethod
     def add_row_in_table_books(name_book, number_of_pages_book,
                                index_book_binding_type, release_date_book,
-                               index_udc, index_bbk, index_publisher, isbn):
+                               index_udc, index_bbk, index_publisher, isbn, description_record):
         if type(name_book) is not list:
             query = "INSERT INTO `librarydb`.`books`"\
                     "(`name_book`,`number_of_pages_book`,"\
                     "`index_book_binding_type`,`release_date_book`,"\
-                    "`index_udc`,`index_bbk`, `index_publisher`,`isbn`)"\
-                    " VALUES ('%s', %s, %s, %s, %s, %s, %s, '%s');"\
+                    "`index_udc`,`index_bbk`, `index_publisher`,`isbn`, `description_record`)"\
+                    " VALUES ('%s', %s, %s, %s, %s, %s, %s, '%s', '%s');"\
                     % (name_book, str(number_of_pages_book), str(index_book_binding_type),
-                       str(release_date_book), str(index_udc), str(index_bbk), str(index_publisher), isbn)
+                       str(release_date_book), str(index_udc), str(index_bbk), str(index_publisher),
+                       isbn, description_record)
         else:
             query = "INSERT INTO `librarydb`.`books`" \
                     "(`name_book`,`number_of_pages_book`," \
                     "`index_book_binding_type`,`release_date_book`," \
-                    "`index_udc`,`index_bbk`, `index_publisher`,`isbn`)" \
+                    "`index_udc`,`index_bbk`, `index_publisher`,`isbn`, `description_record`)" \
                     " VALUES"
             iterator = 0
             while iterator < len(name_book):
                 query += "('" + name_book[iterator] + "'," + str(number_of_pages_book[iterator]) + "," +\
                          str(index_book_binding_type[iterator]) + "," + str(release_date_book[iterator]) + "," +\
                          str(index_udc[iterator]) + "," + str(index_bbk[iterator]) + "," +\
-                         + str(index_publisher[iterator]) + "," +isbn[iterator] + "')"
+                         + str(index_publisher[iterator]) + ","\
+                         + isbn[iterator] + "," + description_record[iterator] + "')"
                 iterator += 1
                 if iterator < len(name_book):
                     query += ","
                 query += ";"
+        return query
+
+    @staticmethod
+    def add_row_in_table_cache(id_books, name_book, author_group,
+                               genre_group, index_bbk,index_udc,
+                               isbn, publisher, number_of_pages_book,
+                               binding_type, description_record, release_date_book):
+        if type(name_book) is not list:
+            query = "INSERT INTO `librarydb`.`cache`"\
+                    "(`id_books`," \
+                    "`name_book`," \
+                    "`author_group`," \
+                    "`genre_group`," \
+                    "`index_bbk`," \
+                    "`index_udc`," \
+                    "`isbn`," \
+                    "`publisher`," \
+                    "`number_of_pages_book`," \
+                    "`binding_type`," \
+                    "`description_record`," \
+                    "`release_date_book`)" \
+                    " VALUES (%s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');"\
+                    % (id_books,
+                       name_book,
+                       author_group,
+                       genre_group,
+                       index_bbk,
+                       index_udc,
+                       isbn,
+                       publisher,
+                       number_of_pages_book,
+                       binding_type,
+                       description_record,
+                       release_date_book)
         return query
 
     @staticmethod
